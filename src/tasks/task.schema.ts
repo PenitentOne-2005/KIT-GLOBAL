@@ -4,28 +4,28 @@ import { Document } from 'mongoose';
 @Schema({ timestamps: true })
 export class Task extends Document {
   @Prop({ required: true })
-  title: string;
+  title!: string;
 
   @Prop()
-  description: string;
+  description!: string;
 
   @Prop({ default: 'todo' })
-  status: 'todo' | 'in_progress' | 'done';
+  status!: 'todo' | 'in_progress' | 'done';
 
   @Prop({ required: true })
-  projectId: string;
+  projectId!: string;
 
   @Prop()
-  assigneeId: string;
+  assigneeId!: string;
 
   @Prop()
-  parentTaskId: string; // для подзадач
+  parentTaskId!: string; // для подзадач
 
   @Prop([String])
-  tags: string[];
+  tags!: string[];
 
   @Prop()
-  deadline: Date;
+  deadline!: Date;
 
   @Prop({
     type: {
@@ -35,7 +35,7 @@ export class Task extends Document {
     },
     coordinates: { type: [Number], default: [0, 0] },
   })
-  location: { type: 'Point'; coordinates: number[] };
+  location!: { type: 'Point'; coordinates: number[] };
 }
 
 // 🔹 Индексы для поиска и GEO

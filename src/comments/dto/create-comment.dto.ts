@@ -2,9 +2,9 @@ import { IsString, IsNotEmpty, IsMongoId } from 'class-validator';
 
 export class CreateCommentDto {
   @IsMongoId()
-  taskId: string;
+  taskId!: string;
 
   @IsString()
   @IsNotEmpty()
-  text: string;
+  text!: string;
 }

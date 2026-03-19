@@ -11,7 +11,7 @@ import {
 export class CreateTaskDto {
   @ApiProperty({ description: 'Название задачи' })
   @IsString()
-  title: string;
+  title!: string;
 
   @ApiPropertyOptional({ description: 'Описание задачи' })
   @IsOptional()

@@ -4,13 +4,13 @@ import { Document } from 'mongoose';
 @Schema({ timestamps: true })
 export class Comment extends Document {
   @Prop({ required: true })
-  taskId: string;
+  taskId!: string;
 
   @Prop({ required: true })
-  userId: string;
+  userId!: string;
 
   @Prop({ required: true })
-  text: string;
+  text!: string;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);

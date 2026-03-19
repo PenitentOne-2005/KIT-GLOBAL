@@ -5,10 +5,10 @@ import { getModelToken } from '@nestjs/mongoose';
 describe('ProjectsService', () => {
   let service: ProjectsService;
   const mockProjectModel = {
-    find: jest.fn(),
-    findById: jest.fn(),
     create: jest.fn(),
-    findByIdAndUpdate: jest.fn(),
+    find: jest.fn().mockReturnThis(),
+    findById: jest.fn().mockReturnThis(),
+    findByIdAndUpdate: jest.fn().mockReturnThis(),
     findByIdAndDelete: jest.fn(),
   };
 

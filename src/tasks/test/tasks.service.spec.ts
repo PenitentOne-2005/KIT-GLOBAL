@@ -4,12 +4,14 @@ import { getModelToken } from '@nestjs/mongoose';
 
 describe('TasksService', () => {
   let service: TasksService;
+
   const mockTaskModel = {
-    find: jest.fn(),
-    findById: jest.fn(),
     create: jest.fn(),
+    find: jest.fn().mockReturnThis(),
+    findById: jest.fn().mockReturnThis(),
     findByIdAndUpdate: jest.fn(),
     findByIdAndDelete: jest.fn(),
+    sort: jest.fn().mockReturnValue(['task1', 'task2']),
   };
 
   beforeEach(async () => {
@@ -34,9 +36,11 @@ describe('TasksService', () => {
     expect(mockTaskModel.create).toHaveBeenCalled();
   });
 
-  it('findAll should call find', async () => {
-    mockTaskModel.find.mockResolvedValue(['task1', 'task2']);
+  it('findAll should call find and sort', async () => {
+    mockTaskModel.sort.mockReturnValue(['task1', 'task2']); // результат сортировки
     const tasks = await service.findAll({});
+    expect(mockTaskModel.find).toHaveBeenCalled();
+    expect(mockTaskModel.sort).toHaveBeenCalledWith({ createdAt: -1 });
     expect(tasks).toEqual(['task1', 'task2']);
   });
 
@@ -44,6 +48,11 @@ describe('TasksService', () => {
     mockTaskModel.findByIdAndUpdate.mockResolvedValue({ title: 'Updated' });
     const task = await service.update('id1', { title: 'Updated' });
     expect(task.title).toEqual('Updated');
+    expect(mockTaskModel.findByIdAndUpdate).toHaveBeenCalledWith(
+      'id1',
+      { title: 'Updated' },
+      { new: true },
+    );
   });
 
   it('remove should call findByIdAndDelete', async () => {

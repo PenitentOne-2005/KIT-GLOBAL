@@ -4,12 +4,23 @@ import UsersService from '../users.service';
 
 describe('UsersService', () => {
   let service: UsersService;
+
   const mockUserModel = {
-    find: jest.fn(),
-    findById: jest.fn(),
-    create: jest.fn(),
-    findByIdAndUpdate: jest.fn(),
-    findByIdAndDelete: jest.fn(),
+    find: jest.fn().mockReturnValue({
+      select: jest.fn().mockResolvedValue([{ id: '1', email: 'a@b.com' }]),
+    }),
+    findById: jest.fn().mockReturnValue({
+      select: jest
+        .fn()
+        .mockResolvedValue({ id: '1', email: 'a@b.com', password: 'hashed' }),
+    }),
+    create: jest
+      .fn()
+      .mockResolvedValue({ _id: '1', email: 'a@b.com', password: 'hashed' }),
+    findByIdAndUpdate: jest
+      .fn()
+      .mockResolvedValue({ id: '1', email: 'updated@b.com' }),
+    findByIdAndDelete: jest.fn().mockResolvedValue({}),
   };
 
   beforeEach(async () => {
@@ -28,16 +39,20 @@ describe('UsersService', () => {
   });
 
   it('findAll should call find on model', async () => {
-    mockUserModel.find.mockResolvedValue(['user1', 'user2']);
     const users = await service.findAll();
-    expect(users).toEqual(['user1', 'user2']);
+
+    expect(users).toEqual([{ id: '1', email: 'a@b.com' }]);
     expect(mockUserModel.find).toHaveBeenCalled();
   });
 
   it('findById should call findById on model', async () => {
-    mockUserModel.findById.mockResolvedValue({ name: 'Test' });
     const user = await service.findById('id1');
-    expect(user).toEqual({ name: 'Test' });
+
+    expect(user).toEqual({
+      id: '1',
+      email: 'a@b.com',
+      password: 'hashed',
+    });
     expect(mockUserModel.findById).toHaveBeenCalledWith('id1');
   });
 });

@@ -1,18 +1,27 @@
+import bcrypt from 'bcrypt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import AuthService from '../auth.service';
-import UsersService from 'src/users/users.service';
+import UsersService from '../../users/users.service';
 
 describe('AuthService', () => {
   let service: AuthService;
 
   const mockUsersService = {
-    findByEmail: jest.fn(),
-    create: jest.fn(),
+    findByEmail: jest.fn().mockResolvedValue({
+      _id: '507f1f77bcf86cd799439011',
+      email: 'a@b.com',
+      password: bcrypt.hashSync('1234', 10),
+    }),
+    create: jest.fn().mockResolvedValue({
+      _id: '507f1f77bcf86cd799439011',
+      email: 'a@b.com',
+      password: bcrypt.hashSync('1234', 10),
+    }),
   };
 
   const mockJwtService = {
-    sign: jest.fn(),
+    sign: jest.fn().mockReturnValue('token123'),
   };
 
   beforeEach(async () => {
@@ -32,35 +41,28 @@ describe('AuthService', () => {
   });
 
   it('register should create a new user', async () => {
-    // Мок метода create пользователя
-    mockUsersService.create.mockResolvedValue({ id: '1', email: 'a@b.com' });
+    mockUsersService.findByEmail.mockResolvedValueOnce(null);
 
-    // Вызываем register с DTO
     const result = await service.register({
       email: 'a@b.com',
       password: '1234',
     });
 
-    expect(result).toEqual({ id: '1', email: 'a@b.com' });
-    expect(mockUsersService.create).toHaveBeenCalledWith({
-      email: 'a@b.com',
-      password: '1234',
+    expect(result).toEqual({
+      access_token: expect.any(String),
     });
   });
 
   it('login should return token', async () => {
-    // Мокируем JwtService.sign
-    mockJwtService.sign.mockReturnValue('token123');
-
-    // Передаём LoginDto с email и password
     const loginDto = { email: 'a@b.com', password: '1234' };
+
+    mockJwtService.sign.mockReturnValue('token123');
 
     const result = await service.login(loginDto);
 
     expect(result).toEqual({ access_token: 'token123' });
     expect(mockJwtService.sign).toHaveBeenCalledWith({
-      sub: undefined, // если login() внутри ищет пользователя по email и возвращает payload с id, тогда нужно мокать UsersService
-      email: 'a@b.com',
+      id: '507f1f77bcf86cd799439011',
     });
   });
 });

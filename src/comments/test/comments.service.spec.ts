@@ -5,8 +5,11 @@ import { getModelToken } from '@nestjs/mongoose';
 describe('CommentsService', () => {
   let service: CommentsService;
   const mockCommentModel = {
-    find: jest.fn(),
+    find: jest.fn().mockReturnThis(),
+    sort: jest.fn().mockResolvedValue([{ text: 'comment1' }]),
     create: jest.fn(),
+    findOneAndUpdate: jest.fn(),
+    findOneAndDelete: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -34,8 +37,9 @@ describe('CommentsService', () => {
   });
 
   it('findByTask should call find on model', async () => {
-    mockCommentModel.find.mockResolvedValue([{ text: 'comment1' }]);
     const comments = await service.findByTask('task1');
+    expect(mockCommentModel.find).toHaveBeenCalledWith({ taskId: 'task1' });
+    expect(mockCommentModel.sort).toHaveBeenCalledWith({ createdAt: 1 });
     expect(comments[0].text).toEqual('comment1');
   });
 });

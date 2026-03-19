@@ -18,6 +18,7 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import TasksService from './tasks.service';
+import type { AuthRequest } from 'src/interface';
 import CommentsService from '../comments/comments.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -91,7 +92,7 @@ class TasksController {
   @Post(':id/comments')
   @ApiOperation({ summary: 'Добавить комментарий к задаче' })
   addComment(
-    @Request() req,
+    @Request() req: AuthRequest,
     @Param('id') taskId: string,
     @Body() body: { text: string },
   ) {
